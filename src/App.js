@@ -1,23 +1,24 @@
-import logo from './logo.svg';
+import React from 'react';
+import WordMatch from './components/WordMatch';
+import MathQuiz from './components/MathQuiz';
 import './App.css';
 
 function App() {
+  const [game, setGame] = React.useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Wordle Kids</h1>
+      {!game ? (
+        <div>
+          <button onClick={() => setGame('word')}>Ghép chữ</button>
+          <button onClick={() => setGame('math')}>Tính toán</button>
+        </div>
+      ) : game === 'word' ? (
+        <WordMatch />
+      ) : (
+        <MathQuiz />
+      )}
     </div>
   );
 }
