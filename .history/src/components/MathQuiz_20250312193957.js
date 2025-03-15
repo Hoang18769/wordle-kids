@@ -23,21 +23,18 @@ function MathQuiz() {
     fetchQuestion();
   }, []);
 
-  const checkAnswer = useCallback(() => {
+  const checkAnswer = () => {
     if (guess === correctAnswer) {
-      alert("🎉 Chúc mừng! Đáp án đúng.");
-      updateProgress(userId, "mathquiz", 15, 4500); // Cập nhật level và điểm
+      alert("🎉 Chúc mừng!");
+      updateProgress(userId, "mathquiz", level + 1, score + 500);
     } else {
-      setAttempts((prev) => {
-        if (prev === 1) {
-          alert("😢 Bạn đã thua! Chơi lại nhé!");
-          return 3; // Reset số lần thử
-        }
-        return prev - 1;
-      });
+      setAttempts(attempts - 1);
+      if (attempts <= 1) {
+        alert("😢 Bạn đã thua!");
+      }
     }
-    setGuess(""); // Reset input
-  }, [guess, correctAnswer]);
+  };
+  
 
   return (
     <div>

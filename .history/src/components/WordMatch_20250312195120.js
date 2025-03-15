@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../config/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 function WordMatch() {
   const [questions, setQuestions] = useState([]);
   const [level, setLevel] = useState(1);
   const [attempts, setAttempts] = useState(3);
   const [guess, setGuess] = useState('');
-  const [score, setScore] = useState(0);
-  const userId = "test_user"; // 🔥 Thay bằng user hiện tại
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -16,7 +14,7 @@ function WordMatch() {
       const data = querySnapshot.docs
         .map(doc => doc.data())
         .filter(item => item.game === 'word')
-        .sort((a, b) => a.level - b.level);
+        .sort((a, b) => a.level - b.level); // Sắp xếp theo level
 
       setQuestions(data);
     };
@@ -24,41 +22,22 @@ function WordMatch() {
     fetchQuestions();
   }, []);
 
-  const updateUserProgress = async (newLevel, newScore) => {
-    const userRef = doc(db, 'progress', userId);
-    try {
-      await setDoc(userRef, {game:"wordmatch" , level: newLevel, score: newScore }, { merge: true });
-    } catch (error) {
-      console.error("Lỗi cập nhật Firebase:", error);
-    }
-  };
-
-  const checkAnswer = async () => {
+  const checkAnswer = () => {
     if (questions.length === 0) return;
 
-    if (guess.toLowerCase() === questions[level - 1]?.answer.toLowerCase()) {
-       const newLevel = level < questions.length ? level + 1 : level;
-      //const newLevel = level + 1;
-
-      const newScore = score + 10; // 🎯 Cộng điểm
-
-      setLevel(newLevel);
-      setScore(newScore);
-      setGuess('');
-
-      await updateUserProgress(newLevel, newScore);
-
-      if (level === questions.length) {
+    if (guess.toLowerCase() === questions[level]?.answer.toLowerCase()) {
+      if (level < questions.length - 1) {
+        setLevel(prev => prev + 1); // Đảm bảo cập nhật đúng
+        setGuess('');
+      } else {
         alert('🎉 Chúc mừng! Bạn đã hoàn thành tất cả màn chơi!');
       }
     } else {
       setAttempts(prev => {
         if (prev <= 1) {
           alert('😢 Bạn đã thua! Chơi lại nhé!');
-          setLevel(1);
-          setScore(0);
+          setLevel(0);
           setAttempts(3);
-          updateUserProgress(1, 0);
         }
         return prev - 1;
       });
@@ -68,11 +47,10 @@ function WordMatch() {
 
   return (
     <div>
-      <h2>Ghép chữ - Màn {level}</h2>
-      <p>Điểm: {score}</p>
+      <h2>Ghép chữ - Màn {level + 1}</h2>
       {questions.length > 0 ? (
         <>
-          <p>Gợi ý: {questions[level - 1]?.question}</p>
+          <p>Gợi ý: {questions[level]?.question}</p>
           <p>Còn {attempts} lượt</p>
           <input value={guess} onChange={(e) => setGuess(e.target.value)} />
           <button onClick={checkAnswer}>Kiểm tra</button>

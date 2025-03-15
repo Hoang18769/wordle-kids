@@ -27,7 +27,7 @@ function WordMatch() {
   const updateUserProgress = async (newLevel, newScore) => {
     const userRef = doc(db, 'progress', userId);
     try {
-      await setDoc(userRef, {game:"wordmatch" , level: newLevel, score: newScore }, { merge: true });
+      await setDoc(userRef, {game:"word" , level: newLevel, score: newScore }, { merge: true });
     } catch (error) {
       console.error("Lỗi cập nhật Firebase:", error);
     }
@@ -37,8 +37,8 @@ function WordMatch() {
     if (questions.length === 0) return;
 
     if (guess.toLowerCase() === questions[level - 1]?.answer.toLowerCase()) {
-       const newLevel = level < questions.length ? level + 1 : level;
-      //const newLevel = level + 1;
+      // const newLevel = level < questions.length ? level + 1 : level;
+      const newLevel = level + 1;
 
       const newScore = score + 10; // 🎯 Cộng điểm
 
